@@ -18,7 +18,7 @@ example.
 @copyright (c) 2022 by the authors and released under the GNU Public License,
     version 3.
 """
-
+import gc
 import utime as time
 from machine import Pin, I2C
 from mlx90640 import MLX90640
@@ -210,7 +210,9 @@ if __name__ == "__main__":
     print(f"I2C Scan: {scanhex}")
 
     # Create the camera object and set it up in default mode
+    gc.collect()
     camera = MLX_Cam(i2c_bus)
+    gc.collect()
 
     while True:
         try:
@@ -224,7 +226,7 @@ if __name__ == "__main__":
             # Display pixellated grayscale or numbers in CSV format; the CSV
             # could also be written to a file. Spreadsheets, Matlab(tm), or
             # CPython can read CSV and make a decent false-color heat plot.
-            show_image = False
+            show_image = True
             show_csv = False
             if show_image:
                 camera.ascii_image(image.buf)
