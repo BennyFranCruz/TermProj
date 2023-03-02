@@ -72,12 +72,14 @@ def initilize():
     i2c_address = 0x33
     scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
     print(f"I2C Scan: {scanhex}")
-
+        
     # Create the camera object and set it up in default mode
     gc.collect()
     camera = MLX_Cam(i2c_bus)
     gc.collect()
-
+    col = 32
+    row = 24
+    
 def main():
     
     
