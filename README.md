@@ -2,10 +2,14 @@
 
 ## By: Benny Cruz, Arfan Ansar, Noah Johnson
 
+### Introduction
+
 Description: Apply automatic target acquisition, aiming, and 
 firing control to a projectile launcher. The launcher must be 
 autonomous in that it detects and tracks a target and launches 
 a projectile without user intervention.
+
+### Hardware Design Overview
 
 Initial Design for our model:
 
@@ -18,3 +22,8 @@ Finite State Machine:
 Week 8 Progress: One axis motion
 
 ![image](https://user-images.githubusercontent.com/123694704/222578552-e666e68b-2c39-4478-9a21-504892391d58.png)
+
+
+### Software Design Overview
+
+
