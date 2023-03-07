@@ -2,14 +2,18 @@
 
 ## By: Benny Cruz, Arfan Ansar, Noah Johnson
 
-### Introduction
+### Introduction:
+
+The purpose of our project...
+
+Our device is intended to be used by...
 
 Description: Apply automatic target acquisition, aiming, and 
 firing control to a projectile launcher. The launcher must be 
 autonomous in that it detects and tracks a target and launches 
 a projectile without user intervention.
 
-### Hardware Design Overview
+### Hardware Design Overview:
 
 Initial Design for our model:
 
@@ -24,6 +28,25 @@ Week 8 Progress: One axis motion
 ![image](https://user-images.githubusercontent.com/123694704/222578552-e666e68b-2c39-4478-9a21-504892391d58.png)
 
 
-### Software Design Overview
+### Software Design Overview:
 
+
+
+Doxygen Link...
+
+### Results:
+
+We tested our system by...
+
+Our system performed well in these tests...
+
+### What was Learned/Recommendations:
+
+What worked well...
+
+What didn't work well...
+
+### Additional Links:
+
+CAD Drawings Link...
 
