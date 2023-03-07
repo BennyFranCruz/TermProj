@@ -79,7 +79,7 @@ def YawMotorControlTask(shares):
 
         position = encode.read() #find current position
 
-        control_output = controller1.run(-10000, position) #run Pcontroller
+        control_output = controller1.run(0, position) #run Pcontroller
         
         #Printing Position Logic
         if t > 30:
@@ -128,7 +128,7 @@ def PitchMotorControlTask(shares):
     while True:
         position2 = encode2.read() #find current position
         
-        control_output2 = controller2.run(12000, position2) #run controller
+        control_output2 = controller2.run(0, position2) #run controller
         #From all the way up, max pos is 18000
         
          #Printing Position Logic
