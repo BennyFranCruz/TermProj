@@ -186,6 +186,7 @@ class MLX_Cam:
 # The test code sets up the sensor, then grabs and shows an image in a terminal
 # every ten and a half seconds or so.
 ## @cond NO_DOXY don't document the test code in the driver documentation
+'''
 if __name__ == "__main__":
 
     # The following import is only used to check if we have an STM32 board such
@@ -248,3 +249,4 @@ if __name__ == "__main__":
     print ("Done.")
 
 ## @endcond End the block which Doxygen should ignore
+'''

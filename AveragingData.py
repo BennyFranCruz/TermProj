@@ -1,7 +1,9 @@
 import gc
 import utime as time
 import Cam
-import numpy as np
+from ulab import numpy as np
+import pyb
+from machine import Pin, I2C
 
 def main():
     # The following import is only used to check if we have an STM32 board such
@@ -32,24 +34,43 @@ def main():
     data_list = []
     data = []
     maxVal = 0
+    begintime = time.ticks_ms()
+    image = camera.get_image()
     try:
         #parse through data and create 2-d array with bottom 12 lines of data
         i = 0
-        for line in camera.Cam.get_csv(image.v_ir, limits=(0, 99)):
+        for line in camera.get_csv(image.v_ir, limits=(0, 99)):
             if(i < 12):
-                data.append(line)
+                line = line.split(',')
+                if(',' in line):
+                    line.remove(',')
+                line = [int(x) for x in line]
+                data_list.append(line)
+                line = []
             i += 1
-            data_list.append(data)
-            data = []
+        #print(data_list)
         # Calculate non-overlapping 3x3 averages
-        averages = np.zeros(((data_list.shape[0]-2)//2, (data_list.shape[1]-2)//2))  # initialize output array
-        for i in range(averages.shape[0]):
-            for j in range(averages.shape[1]):
-                matrix = data_list[i*2:i*2+3, j*2:j*2+3]  # extract non-overlapping 3x3 submatrix
-                averages[i,j] = np.mean(sub_matrix)  # calculate mean and store in output array
-                if(averages[i,j] > maxVal):
-                    maxVal = averages[i,j] 
-        print(averages)
+        #averages = np.zeros((11, 4))  # initialize output array
+        i = 0
+        j = 0
+        while i < 29:
+            while j < 12:
+                if(j%3 == 0 and j != 0):
+                    average = (matrix / 9) # calculate mean and store in output array
+                    print(average)
+                    matrix = 0
+                    if(average > maxVal):
+                        maxVal = average
+                        maxVal_loc = i,j
+                        matrix = 0
+                #print(j)
+                matrix = data_list[j][i] + data_list[j][i+1] + data_list[j][i+2]  # extract non-overlapping 3x3 submatrix
+                j += 1
+            j = 0
+            i += 3
         
     except KeyboardInterrupt:
-        break
+        pass
+
+if __name__ == "__main__":
+    main()
