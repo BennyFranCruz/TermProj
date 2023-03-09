@@ -179,7 +179,7 @@ if __name__ == "__main__":
     task1 = cotask.Task(YawMotorControlTask, name="Task_1", priority=1, period=25,
                         profile=True, trace=False, shares=(Y_goal, Y_vel))
     task2 = cotask.Task(PitchMotorControlTask, name="Task_2", priority=2, period=25,
-                        profile=True, trace=False, shares=(Y_goal)
+                        profile=True, trace=False, shares=(Y_goal))
     task3 = cotask.Task(MainTask, name="Task_3", priority=3, period=10,
                         profile=True, trace=False, shares=(Y_goal, Y_vel))
     cotask.task_list.append(task1)
