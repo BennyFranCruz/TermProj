@@ -40,7 +40,7 @@ def initilize():
     gc.collect()
     col = 32
     row = 24
-    
+
 def YawMotorControlTask(shares):
     """!
     Task sets up a second motor and encoder and runs a proportional
@@ -48,8 +48,8 @@ def YawMotorControlTask(shares):
     @param shares A list holding the share and queue used by this task
     """
     
-    print("ftw")
-    
+    Y_goal, Y_vel = shares
+        
     #Encoder initializing. Includes defining the timer and the pins for our encoder class
     pinB6 = pyb.Pin(pyb.Pin.board.PB6, pyb.Pin.IN)
     pinB7 = pyb.Pin(pyb.Pin.board.PB7, pyb.Pin.IN)
@@ -73,19 +73,22 @@ def YawMotorControlTask(shares):
     #creates P pontroller object and sets Ka
     controller1 = porportional_controller.PorportionalController(.08)
     
-    t = 0
+    position = 0
     
     while True:
-
+        oldposition = position #remembers old position
         position = encode.read() #find current position
+                                        #Gets the current pos goal
+        Y_vel.put(position-oldposition) #Puts the current velocity
 
-        control_output = controller1.run(0, position) #run Pcontroller
+        
+        control_output = controller1.run(Y_goal.get(), position) #run Pcontroller
         
         #Printing Position Logic
-        if t > 30:
-            print(position)
-            t = 0
-        t+= 1
+        #if t > 30:
+            #print(position)
+            #t = 0
+        #t+= 1
 
         moe.set_duty_cycle(control_output) #set the duty cycle to value found from Pcontroller
         
@@ -97,8 +100,6 @@ def PitchMotorControlTask(shares):
     controller with a set position on this motor. 
     @param shares A list holding the share and queue used by this task
     """
-    
-    print("wtf")
     
     #Encoder initializing. Includes defining the timer and the pins for our encoder class
     pinC6 = pyb.Pin(pyb.Pin.board.PC6, pyb.Pin.IN)
@@ -142,6 +143,19 @@ def PitchMotorControlTask(shares):
         
         yield(0) #return nothing
         
+def MainTask(shares):
+    """!
+    Task controls all rotate, aim, fire sequence
+    @param shares A list holding the share and queue used by this task
+    """
+    while True:
+    
+        Y_goal, Y_vel = shares
+    
+        Y_goal.put(20000)
+        print(Y_vel.get())
+    
+        yield(0)
     
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
@@ -151,7 +165,9 @@ if __name__ == "__main__":
           "Press Ctrl-C to stop and show diagnostics.")
 
     # Create a share and a queue to test function and diagnostic printouts
-    share0 = task_share.Share('h', thread_protect=False, name="Share 0")
+    Y_goal = task_share.Share('h', thread_protect=False, name="Y Goal")
+    Y_vel = task_share.Share('h', thread_protect=False, name="Y Vel")
+    
     q0 = task_share.Queue('L', 16, thread_protect=False, overwrite=False,
                           name="Queue 0")
 
@@ -161,11 +177,14 @@ if __name__ == "__main__":
     # debugging and set trace to False when it's not needed
     
     task1 = cotask.Task(YawMotorControlTask, name="Task_1", priority=1, period=25,
-                        profile=True, trace=False, shares=(share0, q0))
+                        profile=True, trace=False, shares=(Y_goal, Y_vel))
     task2 = cotask.Task(PitchMotorControlTask, name="Task_2", priority=2, period=25,
-                        profile=True, trace=False, shares=(share0, q0))
+                        profile=True, trace=False, shares=(Y_goal)
+    task3 = cotask.Task(MainTask, name="Task_3", priority=3, period=10,
+                        profile=True, trace=False, shares=(Y_goal, Y_vel))
     cotask.task_list.append(task1)
     cotask.task_list.append(task2)
+    cotask.task_list.append(task3)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
