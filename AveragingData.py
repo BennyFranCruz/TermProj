@@ -36,38 +36,32 @@ def main():
     maxVal = 0
     begintime = time.ticks_ms()
     image = camera.get_image()
+    print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
+    
+    limits=(0, 99)
+    scale = (limits[1] - limits[0]) / (max(image.v_ir) - min(image.v_ir))
+    offset = limits[0] - min(image.v_ir)
+    
     try:
-        #parse through data and create 2-d array with bottom 12 lines of data
-        i = 0
-        for line in camera.get_csv(image.v_ir, limits=(0, 99)):
-            if(i < 12):
-                line = line.split(',')
-                if(',' in line):
-                    line.remove(',')
-                line = [int(x) for x in line]
-                data_list.append(line)
-                line = []
-            i += 1
-        #print(data_list)
         # Calculate non-overlapping 3x3 averages
-        #averages = np.zeros((11, 4))  # initialize output array
-        i = 0
-        j = 0
-        while i < 29:
-            while j < 12:
-                if(j%3 == 0 and j != 0):
-                    average = (matrix / 9) # calculate mean and store in output array
-                    print(average)
+        row = 12
+        col = 0
+        matrix = 0
+        while col < 29:
+            while row < 23:
+                if(col%3 == 0 and col != 0 and col != 1 and col != 2):
+                    if(matrix > maxVal):
+                        maxVal = matrix
+                        maxVal_loc = row,col
                     matrix = 0
-                    if(average > maxVal):
-                        maxVal = average
-                        maxVal_loc = i,j
-                        matrix = 0
-                #print(j)
-                matrix = data_list[j][i] + data_list[j][i+1] + data_list[j][i+2]  # extract non-overlapping 3x3 submatrix
-                j += 1
-            j = 0
-            i += 3
+                if col == 12:
+                    break   
+                matrix += int((image.v_ir[row * 32 + (31 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (32 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (33 - col)] + offset) * scale)
+                row += 1
+            row = 0
+            col += 3
+        print(f"{maxVal_loc}")
+        print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
         
     except KeyboardInterrupt:
         pass
