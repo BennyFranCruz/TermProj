@@ -74,6 +74,7 @@ def YawMotorControlTask(shares):
     controller1 = porportional_controller.PorportionalController(.08)
     
     position = 0
+    t=0
     
     while True:
         oldposition = position #remembers old position
@@ -85,10 +86,10 @@ def YawMotorControlTask(shares):
         control_output = controller1.run(Y_goal.get(), position) #run Pcontroller
         
         #Printing Position Logic
-        #if t > 30:
-            #print(position)
-            #t = 0
-        #t+= 1
+        if t > 30:
+            print(position)
+            t = 0
+        t+= 1
 
         moe.set_duty_cycle(control_output) #set the duty cycle to value found from Pcontroller
         
@@ -152,8 +153,8 @@ def MainTask(shares):
     
         Y_goal, Y_vel = shares
     
-        Y_goal.put(20000)
-        print(Y_vel.get())
+        Y_goal.put(32500)
+        #print(Y_vel.get())
     
         yield(0)
     
