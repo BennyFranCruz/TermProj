@@ -48,7 +48,7 @@ def YawMotorControlTask(shares):
     @param shares A list holding the share and queue used by this task
     """
     
-    Y_goal, Y_vel = shares
+    Y_pos, Y_vel, Y_goal = shares
         
     #Encoder initializing. Includes defining the timer and the pins for our encoder class
     pinB6 = pyb.Pin(pyb.Pin.board.PB6, pyb.Pin.IN)
@@ -81,15 +81,16 @@ def YawMotorControlTask(shares):
         position = encode.read() #find current position
                                         #Gets the current pos goal
         Y_vel.put(position-oldposition) #Puts the current velocity
+        Y_pos.put(position)
 
         
         control_output = controller1.run(Y_goal.get(), position) #run Pcontroller
         
         #Printing Position Logic
-        if t > 30:
-            print(position)
-            t = 0
-        t+= 1
+        #if t > 30:
+            #print(position)
+            #t = 0
+        #t+= 1
 
         moe.set_duty_cycle(control_output) #set the duty cycle to value found from Pcontroller
         
@@ -101,6 +102,7 @@ def PitchMotorControlTask(shares):
     controller with a set position on this motor. 
     @param shares A list holding the share and queue used by this task
     """
+    X_pos, X_vel, X_goal = shares
     
     #Encoder initializing. Includes defining the timer and the pins for our encoder class
     pinC6 = pyb.Pin(pyb.Pin.board.PC6, pyb.Pin.IN)
@@ -125,22 +127,29 @@ def PitchMotorControlTask(shares):
     #creates P pontroller object and sets Ka
     controller2 = porportional_controller.PorportionalController(.05)
     
-    #t = 0
+    position = 0
+    t = 0
     
-    while True:
-        position2 = encode2.read() #find current position
+    while True:   
+        oldposition = position #remembers old position
+        position = encode2.read() #find current position
+                                        #Gets the current pos goal
+        X_vel.put(position-oldposition) #Puts the current velocity
+        X_pos.put(position)
+
         
-        control_output2 = controller2.run(0, position2) #run controller
+        control_output = controller2.run(X_goal.get(), position) #run Pcontroller
+        
         #From all the way up, max pos is 18000
         
          #Printing Position Logic
         
         #if t > 10:
-            #print(position2)
+            #print(position)
             #t = 0
         #t+= 1
 
-        moe2.set_duty_cycle(control_output2) #Sets duty cycle to controller output
+        moe2.set_duty_cycle(control_output) #Sets duty cycle to controller output
         
         yield(0) #return nothing
         
@@ -149,13 +158,49 @@ def MainTask(shares):
     Task controls all rotate, aim, fire sequence
     @param shares A list holding the share and queue used by this task
     """
+    Y_pos, Y_vel, Y_goal, X_pos, X_vel, X_goal = shares
+    
+    
+    
+    "Turn 180 State"
+    
+    Y_goal.put(0)#-100000)
+        
+    while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
+        
+        X_goal.put(0)#5700)
+        Y_goal.put(0)#-100000)
+        yield(0)
+
+    
+    "TEMP Scan With Camera State"
+    "This state will output pixel loccation of aim target"
+    T = 0
+    while T < 100:
+        print("scanning")
+        T += 1
+        yield(0)
+        
+    "Aim State"
+    
+    #Funct that converts pixel target to values for aim goals goes her
+    
+    Y_CameraGoal = 0 #-100000 + 23000
+    X_CameraGoal = 0 #5700 - 1500 #Temp Aim goals
+    
+    Y_goal.put(Y_CameraGoal)
+    X_goal.put(X_CameraGoal)
+    
+    while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
+        
+        Y_goal.put(Y_CameraGoal)
+        X_goal.put(X_CameraGoal)
+        yield(0)  
+    
+    "Fire State"
     while True:
-    
-        Y_goal, Y_vel = shares
-    
-        Y_goal.put(32500)
-        #print(Y_vel.get())
-    
+        #Logic for Firing goes here
+        print("fire!")
         yield(0)
     
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
@@ -166,8 +211,15 @@ if __name__ == "__main__":
           "Press Ctrl-C to stop and show diagnostics.")
 
     # Create a share and a queue to test function and diagnostic printouts
-    Y_goal = task_share.Share('h', thread_protect=False, name="Y Goal")
-    Y_vel = task_share.Share('h', thread_protect=False, name="Y Vel")
+    Y_pos = task_share.Share('q', thread_protect=False, name="Y Pos")
+    Y_vel = task_share.Share('q', thread_protect=False, name="Y Vel")
+    Y_goal = task_share.Share('q', thread_protect=False, name="Y Goal")
+    
+    X_pos = task_share.Share('q', thread_protect=False, name="X Pos")
+    X_vel = task_share.Share('q', thread_protect=False, name="X Vel")
+    X_goal = task_share.Share('q', thread_protect=False, name="X Goal")
+    
+    
     
     q0 = task_share.Queue('L', 16, thread_protect=False, overwrite=False,
                           name="Queue 0")
@@ -178,11 +230,11 @@ if __name__ == "__main__":
     # debugging and set trace to False when it's not needed
     
     task1 = cotask.Task(YawMotorControlTask, name="Task_1", priority=1, period=25,
-                        profile=True, trace=False, shares=(Y_goal, Y_vel))
+                        profile=True, trace=False, shares=(Y_pos, Y_vel, Y_goal))
     task2 = cotask.Task(PitchMotorControlTask, name="Task_2", priority=2, period=25,
-                        profile=True, trace=False, shares=(Y_goal))
+                        profile=True, trace=False, shares=(X_pos, X_vel, X_goal))
     task3 = cotask.Task(MainTask, name="Task_3", priority=3, period=10,
-                        profile=True, trace=False, shares=(Y_goal, Y_vel))
+                        profile=True, trace=False, shares=(Y_pos, Y_vel, Y_goal, X_pos, X_vel, X_goal))
     cotask.task_list.append(task1)
     cotask.task_list.append(task2)
     cotask.task_list.append(task3)
