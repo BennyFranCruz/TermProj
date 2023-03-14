@@ -214,6 +214,7 @@ def MainTask(shares):
         print(f"{maxVal_loc}")
         print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
         #time.sleep_ms(10000)
+        
     except KeyboardInterrupt:
         pass
     
