@@ -60,8 +60,8 @@ def main():
                         maxVal = matrix
                         maxVal_loc = row,col
                     matrix = 0
-                if col == 12:
-                    break   
+                #if col == 12:
+                #    break   
                 matrix += int((image.v_ir[row * 32 + (31 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (32 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (33 - col)] + offset) * scale)
                 #print(matrix)
                 row += 1
@@ -71,7 +71,7 @@ def main():
         print(maxVal)
         print(f"{maxVal_loc}")
         print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
-        time.sleep_ms(100000)
+        time.sleep_ms(10000)
     #except KeyboardInterrupt:
     #    pass
 

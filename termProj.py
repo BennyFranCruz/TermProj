@@ -182,8 +182,43 @@ def MainTask(shares):
         yield(0)
         
     "Aim State"
+    try:
+        image = camera.get_image()
+        maxVal = 0
+        # Calculate non-overlapping 3x3 averages
+        row = 12
+        col = 0
+        matrix = 0
+        limits=(0, 99)
+        scale = (limits[1] - limits[0]) / (max(image.v_ir) - min(image.v_ir))
+        offset = limits[0] - min(image.v_ir)
+        while col < 29:
+            while row < 23:
+                #print(row)
+                if(row%3 == 0 and row != 0 and row != 1 and row != 2):
+                    print(matrix)
+                    if(matrix > maxVal):
+                        #print(maxVal)
+                        maxVal = matrix
+                        maxVal_loc = row,col
+                    matrix = 0
+                #if col == 12:
+                #    break   
+                matrix += int((image.v_ir[row * 32 + (31 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (32 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (33 - col)] + offset) * scale)
+                #print(matrix)
+                row += 1
+            matrix = 0
+            row = 12
+            col += 3
+        print(maxVal)
+        print(f"{maxVal_loc}")
+        print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
+        #time.sleep_ms(10000)
+    except KeyboardInterrupt:
+        pass
     
     #Funct that converts pixel target to values for aim goals goes her
+    #Use maxVal_loc tuple to conver to pixel location 
     
     Y_CameraGoal = 0 #-100000 + 23000
     X_CameraGoal = 0 #5700 - 1500 #Temp Aim goals
