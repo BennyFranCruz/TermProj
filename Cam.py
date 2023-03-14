@@ -227,8 +227,8 @@ if __name__ == "__main__":
             # Display pixellated grayscale or numbers in CSV format; the CSV
             # could also be written to a file. Spreadsheets, Matlab(tm), or
             # CPython can read CSV and make a decent false-color heat plot.
-            show_image = False
-            show_csv = True
+            show_image = True
+            show_csv = False
             data_list = []
             if show_image:
                 camera.ascii_image(image.buf)
@@ -241,12 +241,11 @@ if __name__ == "__main__":
             else:
                 camera.ascii_art(image.v_ir)
             print(data_list)
-            time.sleep_ms(100000)
+            time.sleep_ms(10000)
 
         except KeyboardInterrupt:
             break
 
     print ("Done.")
-
-## @endcond End the block which Doxygen should ignore
 '''
+## @endcond End the block which Doxygen should ignore

@@ -20,7 +20,7 @@ def main():
     else:
         i2c_bus = I2C(1)
 
-    print("MXL90640 Easy(ish) Driver Test")
+    print("Starting")
 
     # Select MLX90640 camera I2C address, normally 0x33, and check the bus
     i2c_address = 0x33
@@ -38,33 +38,42 @@ def main():
     image = camera.get_image()
     print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
     
-    limits=(0, 99)
-    scale = (limits[1] - limits[0]) / (max(image.v_ir) - min(image.v_ir))
-    offset = limits[0] - min(image.v_ir)
     
-    try:
+    
+    while True:
+        image = camera.get_image()
+        maxVal = 0
         # Calculate non-overlapping 3x3 averages
         row = 12
         col = 0
         matrix = 0
+        limits=(0, 99)
+        scale = (limits[1] - limits[0]) / (max(image.v_ir) - min(image.v_ir))
+        offset = limits[0] - min(image.v_ir)
         while col < 29:
             while row < 23:
-                if(col%3 == 0 and col != 0 and col != 1 and col != 2):
+                #print(row)
+                if(row%3 == 0 and row != 0 and row != 1 and row != 2):
+                    print(matrix)
                     if(matrix > maxVal):
+                        #print(maxVal)
                         maxVal = matrix
                         maxVal_loc = row,col
                     matrix = 0
                 if col == 12:
                     break   
                 matrix += int((image.v_ir[row * 32 + (31 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (32 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (33 - col)] + offset) * scale)
+                #print(matrix)
                 row += 1
-            row = 0
+            matrix = 0
+            row = 12
             col += 3
+        print(maxVal)
         print(f"{maxVal_loc}")
         print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
-        
-    except KeyboardInterrupt:
-        pass
+        time.sleep_ms(100000)
+    #except KeyboardInterrupt:
+    #    pass
 
 if __name__ == "__main__":
     main()
