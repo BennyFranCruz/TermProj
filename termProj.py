@@ -161,7 +161,7 @@ def MainTask(shares):
     
     "Turn 180 State"
     
-    X_goal.put(100000)#-100000)
+    Y_goal.put(100000)#-100000)
     time.sleep_ms(5000)
     gc.collect()   
     while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
