@@ -3,43 +3,14 @@ import motor_driver
 import porportional_controller
 import task_share
 import cotask
-import mma845x
-
+import utime as time
+from machine import Pin, I2C
 import Cam
 
 import gc
 import pyb 
 
-def initilize():
-    
-    # The following import is only used to check if we have an STM32 board such
-    # as a Pyboard or Nucleo; if not, use a different library
-    # the following code also initilizes the camera
-    try:
-        from pyb import info
 
-    # Oops, it's not an STM32; assume generic machine.I2C for ESP32 and others
-    except ImportError:
-        # For ESP32 38-pin cheapo board from NodeMCU, KeeYees, etc.
-        i2c_bus = I2C(1, scl=Pin(22), sda=Pin(21))
-
-    # OK, we do have an STM32, so just use the default pin assignments for I2C1
-    else:
-        i2c_bus = I2C(1)
-
-    print("MXL90640 Easy(ish) Driver Test")
-
-    # Select MLX90640 camera I2C address, normally 0x33, and check the bus
-    i2c_address = 0x33
-    scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
-    print(f"I2C Scan: {scanhex}")
-        
-    # Create the camera object and set it up in default mode
-    gc.collect()
-    camera = MLX_Cam(i2c_bus)
-    gc.collect()
-    col = 32
-    row = 24
 
 def YawMotorControlTask(shares):
     """!
@@ -160,12 +131,39 @@ def MainTask(shares):
     """
     Y_pos, Y_vel, Y_goal, X_pos, X_vel, X_goal = shares
     
-    
+        
+    # The following import is only used to check if we have an STM32 board such
+    # as a Pyboard or Nucleo; if not, use a different library
+    # the following code also initilizes the camera
+    try:
+        from pyb import info
+
+    # Oops, it's not an STM32; assume generic machine.I2C for ESP32 and others
+    except ImportError:
+        # For ESP32 38-pin cheapo board from NodeMCU, KeeYees, etc.
+        i2c_bus = I2C(1, scl=Pin(22), sda=Pin(21))
+
+    # OK, we do have an STM32, so just use the default pin assignments for I2C1
+    else:
+        i2c_bus = I2C(1)
+
+    # Select MLX90640 camera I2C address, normally 0x33, and check the bus
+    i2c_address = 0x33
+    scanhex = [f"0x{addr:X}" for addr in i2c_bus.scan()]
+    print(f"I2C Scan: {scanhex}")
+        
+    # Create the camera object and set it up in default mode
+    gc.collect()
+    camera = Cam.MLX_Cam(i2c_bus)
+    gc.collect()
+    col = 32
+    row = 24
     
     "Turn 180 State"
     
-    Y_goal.put(0)#-100000)
-        
+    X_goal.put(100000)#-100000)
+    time.sleep_ms(5000)
+    gc.collect()   
     while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
         
         X_goal.put(0)#5700)
@@ -175,11 +173,11 @@ def MainTask(shares):
     
     "TEMP Scan With Camera State"
     "This state will output pixel loccation of aim target"
-    T = 0
-    while T < 100:
-        print("scanning")
-        T += 1
-        yield(0)
+    #T = 0
+    #while T < 100:
+        #print("scanning")
+     #   T += 1
+     #   yield(0)
         
     "Aim State"
     try:
@@ -190,40 +188,36 @@ def MainTask(shares):
         col = 0
         matrix = 0
         limits=(0, 99)
-        scale = (limits[1] - limits[0]) / (max(image.v_ir) - min(image.v_ir))
-        offset = limits[0] - min(image.v_ir)
+        scale = (limits[1] - limits[0]) / (max(image) - min(image))
+        offset = limits[0] - min(image)
         while col < 29:
             while row < 23:
                 #print(row)
                 if(row%3 == 0 and row != 0 and row != 1 and row != 2):
-                    print(matrix)
+                    #print(matrix)
                     if(matrix > maxVal):
                         #print(maxVal)
                         maxVal = matrix
                         maxVal_loc = row,col
-                    matrix = 0
-                #if col == 12:
-                #    break   
-                matrix += int((image.v_ir[row * 32 + (31 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (32 - col)] + offset) * scale) + int((image.v_ir[row * 32 + (33 - col)] + offset) * scale)
+                    matrix = 0 
+                matrix += int((image[row * 32 + (31 - col)] + offset) * scale) + int((image[row * 32 + (32 - col)] + offset) * scale) + int((image[row * 32 + (33 - col)] + offset) * scale)
                 #print(matrix)
                 row += 1
             matrix = 0
             row = 12
             col += 3
-        print(maxVal)
-        print(f"{maxVal_loc}")
-        print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
-        #time.sleep_ms(10000)
+        
         
     except KeyboardInterrupt:
         pass
-    
+    yield(0)
     #Funct that converts pixel target to values for aim goals goes her
     #Use maxVal_loc tuple to conver to pixel location 
-    
-    Y_CameraGoal = 0 #-100000 + 23000
+    encode_pos = 266 * (maxVal_loc[1] - 16)
+    print(encode_pos)
+    Y_CameraGoal = encode_pos #-100000 + 23000
     X_CameraGoal = 0 #5700 - 1500 #Temp Aim goals
-    
+
     Y_goal.put(Y_CameraGoal)
     X_goal.put(X_CameraGoal)
     
@@ -236,7 +230,7 @@ def MainTask(shares):
     "Fire State"
     while True:
         #Logic for Firing goes here
-        print("fire!")
+        #print("fire!")
         yield(0)
     
 # This code creates a share, a queue, and two tasks, then starts the tasks. The

@@ -54,7 +54,7 @@ def main():
             while row < 23:
                 #print(row)
                 if(row%3 == 0 and row != 0 and row != 1 and row != 2):
-                    print(matrix)
+                    #print(matrix)
                     if(matrix > maxVal):
                         #print(maxVal)
                         maxVal = matrix
@@ -68,9 +68,11 @@ def main():
             matrix = 0
             row = 12
             col += 3
-        print(maxVal)
+        #print(maxVal)
         print(f"{maxVal_loc}")
-        print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
+        #print(f" {time.ticks_diff(time.ticks_ms(), begintime)} ms")
+        encode_pos = 266 * (maxVal_loc[1] - 16)
+        print(f"{encode_pos} position")
         time.sleep_ms(10000)
     #except KeyboardInterrupt:
     #    pass
