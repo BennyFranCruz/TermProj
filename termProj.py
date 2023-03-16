@@ -3,7 +3,7 @@ import motor_driver
 import porportional_controller
 import task_share
 import cotask
-import utime as time
+import utime
 from machine import Pin, I2C
 import Cam
 
@@ -20,6 +20,7 @@ def YawMotorControlTask(shares):
     """
     
     Y_pos, Y_vel, Y_goal = shares
+    
         
     #Encoder initializing. Includes defining the timer and the pins for our encoder class
     pinB6 = pyb.Pin(pyb.Pin.board.PB6, pyb.Pin.IN)
@@ -129,8 +130,13 @@ def MainTask(shares):
     Task controls all rotate, aim, fire sequence
     @param shares A list holding the share and queue used by this task
     """
+    inittime = utime.ticks_ms()
+    
     Y_pos, Y_vel, Y_goal, X_pos, X_vel, X_goal = shares
     
+    #fire pin instalizing
+    pinB4 = pyb.Pin(pyb.Pin.board.PB0, pyb.Pin.OUT_PP)
+    pinB4.value(0)
         
     # The following import is only used to check if we have an STM32 board such
     # as a Pyboard or Nucleo; if not, use a different library
@@ -157,17 +163,29 @@ def MainTask(shares):
     camera = Cam.MLX_Cam(i2c_bus)
     gc.collect()
     col = 32
-    row = 24
+    row = 24  
+    gc.collect()
+    
+    
+    ZeroEncoders = False#SET FALSE BEFORE RUN
+    
+    while ZeroEncoders == True:
+        X_goal.put(0)
+        Y_goal.put(0)
+        yield(0)
+    
+    inittime = utime.ticks_ms()
     
     "Turn 180 State"
-    
-    Y_goal.put(100000)#-100000)
-    time.sleep_ms(5000)
-    gc.collect()   
-    while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
+    Y_goal.put(-100000)
+       
+    while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0: 
         
-        X_goal.put(0)#5700)
-        Y_goal.put(0)#-100000)
+        X_goal.put(4500)
+        Y_goal.put(-100000)
+        yield(0)
+        
+    while (utime.ticks_ms() - inittime < 4800):
         yield(0)
 
     
@@ -179,7 +197,16 @@ def MainTask(shares):
      #   T += 1
      #   yield(0)
         
-    "Aim State"
+    "Scan State"
+    #t=100
+    
+    #while True:
+        
+        #while t < 100:
+            #t += 1
+            #yield(0)
+        #t=0 
+        
     try:
         image = camera.get_image()
         maxVal = 0
@@ -211,12 +238,13 @@ def MainTask(shares):
     except KeyboardInterrupt:
         pass
     yield(0)
+    
     #Funct that converts pixel target to values for aim goals goes her
     #Use maxVal_loc tuple to conver to pixel location 
-    encode_pos = 266 * (maxVal_loc[1] - 16)
-    print(encode_pos)
-    Y_CameraGoal = encode_pos #-100000 + 23000
-    X_CameraGoal = 0 #5700 - 1500 #Temp Aim goals
+    encode_pos = 550 * (maxVal_loc[1] - 16)
+    #print(encode_pos)
+    Y_CameraGoal = -encode_pos - 100000 
+    X_CameraGoal = 4500
 
     Y_goal.put(Y_CameraGoal)
     X_goal.put(X_CameraGoal)
@@ -225,13 +253,19 @@ def MainTask(shares):
         
         Y_goal.put(Y_CameraGoal)
         X_goal.put(X_CameraGoal)
+        
         yield(0)  
     
     "Fire State"
-    while True:
-        #Logic for Firing goes here
-        #print("fire!")
+    c = 0
+    while c < 80:
+        pinB4.value(1)
+        
+        c += 1
         yield(0)
+    
+    while True:
+        pinB4.value(0)
     
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
