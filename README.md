@@ -27,10 +27,20 @@ Week 8 Progress: One axis motion
 
 ![image](https://user-images.githubusercontent.com/123694704/222578552-e666e68b-2c39-4478-9a21-504892391d58.png)
 
+The camera set up was set at eight feet away from the edge of the table which allowed it to be much closer to the opponent then if we kept it mounted on the physical device. This set up provided itself with two initial issues. 
+The first issue was worry of I2C capabilities to transmit data accuretly and quickly along such long wires. However this turned out to not be an issue and required no solution as it worked with the wires used very well and very quickly. When timing the camera capture it took a mere 350ms when using the raw camera input. When comparing this time to the motor actuation, it is minimal and unconsiquential.
+The second issue we faced was ensuring the camera was properly lined up directly in front of 
 
 ### Software Design Overview:
 
 ...
+
+The heat seeking portion of our project was accomplished using the Infared MLX90640 and Camera Driver provided to the class. 
+The I2C connected device returns an array of values that correspond with pixel values produced by the camera with a width of 32 and a height of 24. 
+
+
+The goal of our software was to take this array at to find the hottest three by three section which would correspond to the location of the person. 
+We decided on a three x three square averaging algorithm to ensure that the software would not set the aim point to be at an outlyer of points but rather a concentrated area of heat. The exact value of three by three was decided based on the distance each pixel represents in the real world when the camera is set
 
 Doxygen Link...
 
