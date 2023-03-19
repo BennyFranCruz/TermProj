@@ -33,7 +33,6 @@ The second issue we faced was ensuring the camera was properly lined up directly
 
 ### Software Design Overview:
 
-...
 Our software design included three tasks. In order of priority the taskes were Yaw Motor Control, Pitch Motor Control, and the main task. 
 The thought process behind this was whenever an X or Y goal value was changed we would immediatly want the first priority to be setting the device to that location. Our Yaw and Pitch Motor controlls both ran porportional controllers based on desired encoder values. These encoder values are found in our main task and are shared between the three tasks. The Yaw and Pitch Motor controls are almost identical but each set up and operate on different tub motors. 
 
