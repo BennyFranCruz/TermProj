@@ -4,14 +4,11 @@
 
 ### Introduction:
 
-The purpose of our project...
+The purpose of our device is a heat seeking self aiming turret. The goal is to be able to quickly turn and face an opponent at an unknown location and fire nerf darts at them. Our Device uses a modified D-Dart tempest foam dart blaster, and two motors controlled by the Nucleo microcontroller through this we Apply automatic target acquisition, aiming, and firing control to a projectile launcher. The launcher is autonomous in that it detects and tracks a target and launches a projectile without user intervention.
 
 Our device is intended to be used by...
 
-Description: Apply automatic target acquisition, aiming, and 
-firing control to a projectile launcher. The launcher must be 
-autonomous in that it detects and tracks a target and launches 
-a projectile without user intervention.
+Description: 
 
 ### Hardware Design Overview:
 
@@ -44,8 +41,8 @@ The I2C connected device returns an array of values that correspond with pixel v
 The goal of our software was to take this array at to find the hottest three by three section which would correspond to the location of the person. 
 We decided on a three x three square averaging algorithm to ensure that the software would not set the aim point to be at an outlyer of points but rather a concentrated area of heat. The exact value of three by three was decided based on the distance each pixel represents in the real world. This value was found by setting up the camera in its desired location and taking the picture of a known length object across where the opoonent would stand. Using this method we found each pixel was 1.5 inches in length. Based on this value we deduced a 4.5x4.5 inch block of area was sufficient for our averaging. 
 
-The averaging algorithm itself was double for loop, one incrementing the rows and one incrementing the columns. The nested row incrementation took the values of the corresponding three columns using the following code. 
-matrix += int((image[row * 32 + (31 - col)] + offset) * scale) + int((image[row * 32 + (32 - col)] + offset) * scale) + int((image[row * 32 + (33 - col)] + offset) * scale)
+The averaging algorithm itself was double for loop, one incrementing the rows and one incrementing the columns. The nested row incrementation took the values of the corresponding three columns.
+
 This took the first 1x3 of data. The row is then incremented and the data taken again. Doing this three times creates a value for the 3x3. This value is then compared to the current max value and if larger than that value the row and column location is stored in a tuple to be used later. 
 The outer while loop then increments by three in order to not take overlapping data. By not taking overlapping data it increased the speed of our process to be an average of 270ms per processing. 
 
