@@ -111,15 +111,7 @@ def PitchMotorControlTask(shares):
 
         
         control_output = controller2.run(X_goal.get(), position) #run Pcontroller
-        
-        #From all the way up, max pos is 18000
-        
-         #Printing Position Logic
-        
-        #if t > 10:
-            #print(position)
-            #t = 0
-        #t+= 1
+
 
         moe2.set_duty_cycle(control_output) #Sets duty cycle to controller output
         
@@ -162,11 +154,11 @@ def MainTask(shares):
     gc.collect()
     camera = Cam.MLX_Cam(i2c_bus)
     gc.collect()
-    col = 32
-    row = 24  
+    col = 32 #Set col length
+    row = 24 #Set Row Length 
     gc.collect()
     
-    
+    #Issue of movement when initially Powered on: This code allows us to power on without movement
     ZeroEncoders = False#SET FALSE BEFORE RUN
     
     while ZeroEncoders == True:
@@ -178,7 +170,8 @@ def MainTask(shares):
     
     "Turn 180 State"
     Y_goal.put(-100000)
-       
+    
+    "Move 180 degree rotation"
     while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0: 
         
         X_goal.put(4500)
@@ -188,24 +181,6 @@ def MainTask(shares):
     while (utime.ticks_ms() - inittime < 4800):
         yield(0)
 
-    
-    "TEMP Scan With Camera State"
-    "This state will output pixel loccation of aim target"
-    #T = 0
-    #while T < 100:
-        #print("scanning")
-     #   T += 1
-     #   yield(0)
-        
-    "Scan State"
-    #t=100
-    
-    #while True:
-        
-        #while t < 100:
-            #t += 1
-            #yield(0)
-        #t=0 
         
     try:
         image = camera.get_image()
@@ -249,6 +224,7 @@ def MainTask(shares):
     Y_goal.put(Y_CameraGoal)
     X_goal.put(X_CameraGoal)
     
+    #Use Yaw Motor Control to move to correct position
     while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
         
         Y_goal.put(Y_CameraGoal)
@@ -271,8 +247,6 @@ def MainTask(shares):
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
 # printouts show diagnostic information about the tasks, share, and queue.
 if __name__ == "__main__":
-    print("Testing ME405 stuff in cotask.py and task_share.py\r\n"
-          "Press Ctrl-C to stop and show diagnostics.")
 
     # Create a share and a queue to test function and diagnostic printouts
     Y_pos = task_share.Share('q', thread_protect=False, name="Y Pos")
