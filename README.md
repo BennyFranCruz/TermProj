@@ -54,7 +54,9 @@ These values were found by taking the mutliplying an offset by the value subract
 
 Using these mathematical formulas and some trail and error we found an offset of 550 per pixel to work effectively. The other part of the formula is based on the center pixel of the camera being pixel 16 due to its 32 pixel length. Since we are moving from center with the pixels increasing from 0 to 32 starting from the far left to right of the picture, it is essential to subtract 16 from the column value to deduce the amount of pixels offset the desired location is. This offset also accuretly makes the motor move either left or right based on the negative or positive position. 
 
-With an accurate encoder position, our proprtional controller can be ran on this value to quickly move the barrel to be centered on the target. 
+With an accurate encoder position, our porportional controller can be ran on this value to quickly move the barrel to be centered on the target using the Yaw and Pitch Motor control tasks. 
+
+The final state of our main task file is the firing state. Due to our hardware design described above, a simple turning of a pin high to enable the relay is all that is necessary to fire the device. By setting the time high to a specific value we can determine the amount of "bullets" fired by our device to to its semi-automatic nature. 
 
 Doxygen Link...
 
