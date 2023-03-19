@@ -65,9 +65,11 @@ Our system performed well in these tests...
 
 ### What was Learned/Recommendations:
 
-What worked well...
+The 3-D printed portion of our hardware design worked very well. Through CAD simulations and system modeling we were able to deduce proper gear ratios to move the device easily and effectivly. These gears were 3-D printed on campus and worked extremely well with no issues when installed. By creating gear inserts for the motors, it ensured our gears did not wear quickly and integrated smoothly. 
 
-What didn't work well...
+One of our major issues was the accuracy of the projectile launcher itself. Being a kids toy with no barrel, accuracy was the not the number one priority of the manufacturer. This made it hard to consistently hit a target despite the tracking and motor control being very well executed. The device also had a complicated design with the rotating holster that made the hardware design tricky and limited our options of mounting. 
+
+Picking a projectile launcher was the most crucial part of this project. It is hard to know what exact design specificiations you want when you initilly order this part yet it is an extremely important part of the system that is hard to change later. We would recommend testing accuracy as well as researching weight and size of the launcher before purchasing. 
 
 ### Additional Links:
 
