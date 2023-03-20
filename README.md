@@ -23,6 +23,7 @@ As the design proccess continued, we selected a blaster that could be automatica
 For both axis of aiming we used a simple gear system with a drive gear connected to the motors and a driven gear on each axis. This allowed fine control due to reduction gear ratios. 
 
 Completed CAD Design:
+
 ![image](https://user-images.githubusercontent.com/123684992/226243861-27d542d2-b5b0-49d3-b2bf-de869f64b562.png)
 
 Week 8 Progress: One axis motion
