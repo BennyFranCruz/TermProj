@@ -35,9 +35,24 @@ After week 8, we desided to have the camera be mounted seperatly for the rest of
 Overall, the assembly was sturdy and held up well to use. Though there was some slop in the aiming axis, this did not affect our accuracy enough to be a problem.
 
 Completed Design in Use:
+
 <img width="808" alt="image" src="https://user-images.githubusercontent.com/123684992/226244041-9413da00-9145-44ec-8b8e-c95221b409dd.png">
 
 ### Software Design Overview:
+
+termProj.py is our main file, it contains the highest level code for the opperation of our turret.
+
+encoder_reader.py is a class used to read the motor encoders
+
+motor_driver.py is a class used to drive the motors
+
+porportional_controller.py is a class used to calculate porportional control of the motors
+
+Cam.py is a class used to read data from the thermal camera
+
+Main Task State Diagram:
+
+![image](https://user-images.githubusercontent.com/123684992/226251415-b3a4b6b7-cadd-4a04-a4f7-75e02c1876c7.png)
 
 Our software design included three tasks. In order of priority the taskes were Yaw Motor Control, Pitch Motor Control, and the main task. 
 The thought process behind this was whenever an X or Y goal value was changed we would immediatly want the first priority to be setting the device to that location. Our Yaw and Pitch Motor controlls both ran porportional controllers based on desired encoder values. These encoder values are found in our main task and are shared between the three tasks. The Yaw and Pitch Motor controls are almost identical but each set up and operate on different tub motors. 
@@ -80,8 +95,4 @@ One of our major issues was the accuracy of the projectile launcher itself. Bein
 
 Picking a projectile launcher was the most crucial part of this project. It is hard to know what exact design specificiations you want when you initilly order this part yet it is an extremely important part of the system that is hard to change later. We would recommend testing accuracy as well as researching weight and size of the launcher before purchasing. 
 
-###For Doxy main page
-Finite State Machine:
-
-![image](https://user-images.githubusercontent.com/123694704/222577944-6a93ee3a-615a-4e62-8a17-e6fa583c91a9.png)
 
