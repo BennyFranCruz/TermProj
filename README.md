@@ -8,8 +8,6 @@ The purpose of our device is a heat seeking self aiming turret. The goal is to b
 
 Our device is intended to be used by our team members. Because of this decision, the ergonomic requirements for its operation were much more relaxed. We did not need to design for operation by users who are not fully familiar with the system,  
 
-Description: 
-
 ### Hardware Design Overview:
 
 Our initial design revolved around the goal of yaw and pitch aiming capability. We knew we wanted to use the tub motors due to our access and familiarity with them. Along with this, we knew we wanted to use a nerf gun that required as little modification as possible for integration. This meant through correct blaser selection we would ideally not need to design any loading or firing mechanisms ourselves. This design choise was made in order to simplify the design proccess 
@@ -83,9 +81,9 @@ Doxygen Link...
 
 ### Results:
 
-We tested our system by...
+We tested our system by practicing shots against our teammates to make sure that the tracking was working all right. With our hand calculations we found our encoder to turn approximately 226 units for every degree that it needed to turn. When testing our device we saw that it did not turn enough. We found that we had changed our camera position so we could get a better picture for our thermal camera. We had moved our camera much further and our encoder value changed to around 552 units for every degree that it needed to turn. After calibrating this our device was able to properly find the hottest position and fire. There were times it looked as though the nerf darts were sometimes moving away from the target, which may have been due to the darts being too light. We tried experimenting with heavier darts or adding weights to our darts, but decided this was not the best idea so we stuck with the orignal darts which were still relatively accurate. After testing it more by shooting each other we saw that darts would make contact like around 80% of the time. With this information we decided to shoot 3 darts at a time so we were confident at least one of them would connect. 
 
-Our system performed well in these tests...
+Our system performed well in these tests and our final test could be seen as our duel during our Thursday lab period. During our duel we noticed that our was slow to start the 180 degree turn, this was probably due to the time it takes to initialize our system. Even though our device was much slower, it managed to shoot first anyways. This was because our tracking code was very quick in finding the right position to fire. With this, our device was able to shoot first and have 2 out of 3 darts connect with our opponent. We continued every round being the same as the first with 2 out of 3 shots connecting with the target. There was even a single round where all 3 of our darts managed to connect. With this we managed to win the duel. This showed that our system was able to perform as we expected and with minimal errors.
 
 ### What was Learned/Recommendations:
 
