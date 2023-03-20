@@ -6,27 +6,35 @@
 
 The purpose of our device is a heat seeking self aiming turret. The goal is to be able to quickly turn and face an opponent at an unknown location and fire nerf darts at them. Our Device uses a modified D-Dart tempest foam dart blaster, and two motors controlled by the Nucleo microcontroller through this we Apply automatic target acquisition, aiming, and firing control to a projectile launcher. The launcher is autonomous in that it detects and tracks a target and launches a projectile without user intervention.
 
-Our device is intended to be used by...
+Our device is intended to be used by our team members. Because of this decision, the ergonomic requirements for its operation were much more relaxed. We did not need to design for operation by users who are not fully familiar with the system,  
 
 Description: 
 
 ### Hardware Design Overview:
 
+Our initial design revolved around the goal of yaw and pitch aiming capability. We knew we wanted to use the tub motors due to our access and familiarity with them. Along with this, we knew we wanted to use a nerf gun that required as little modification as possible for integration. This meant through correct blaser selection we would ideally not need to design any loading or firing mechanisms ourselves. This design choise was made in order to simplify the design proccess 
+
 Initial Design for our model:
 
 ![image](https://user-images.githubusercontent.com/123694704/222578896-4dc89d2b-2bda-4261-94ee-272f30845584.png)
 
-Finite State Machine:
+As the design proccess continued, we selected a blaster that could be automatically fired through simply shorting two wires. This meant that our design would ultimately just need to be capable of aiming and shorting the wires. We knew the shorting could be done electronically, and so this removed the complexity of having a mechanical firing method. Ultimately, this also meant we only needed two tub motors for the whole design, with no other mechanically driven elements. 
 
-![image](https://user-images.githubusercontent.com/123694704/222577944-6a93ee3a-615a-4e62-8a17-e6fa583c91a9.png)
+For both axis of aiming we used a simple gear system with a drive gear connected to the motors and a driven gear on each axis. This allowed fine control due to reduction gear ratios. 
+
+Completed CAD Design:
+
+
 
 Week 8 Progress: One axis motion
 
 ![image](https://user-images.githubusercontent.com/123694704/222578552-e666e68b-2c39-4478-9a21-504892391d58.png)
 
-The camera set up was set at eight feet away from the edge of the table which allowed it to be much closer to the opponent then if we kept it mounted on the physical device. This set up provided itself with two initial issues. 
-The first issue was worry of I2C capabilities to transmit data accuretly and quickly along such long wires. However this turned out to not be an issue and required no solution as it worked with the wires used very well and very quickly. When timing the camera capture it took a mere 350ms when using the raw camera input. When comparing this time to the motor actuation, it is minimal and unconsiquential.
-The second issue we faced was ensuring the camera was properly lined up directly in front of the barrel of the device. To accomplish this we attached two strings, one connected to each side of the device and the camera mount. The two strings were the exact length of the table and placed the camera at the edge of the far side of the table. By ensuring both strings are taught it enabled the same placement of the camera every set up. 
+After week 8, we desided to have the camera be mounted seperatly for the rest of the assembly. By having it near the middle of the table, we hoped to have a clearer difelity in the heat captures it could make of opponents. There was concerns that noise along such long wires would become an issue, However this turned out to not be the case. This change did, however, introduce repeatability problems in the system. If the camera was not precisly positioned realative to the main assembly, our amining corrections would be innacurate. To accomplish position repeatability we attached two strings between the assemblies, one connected to each side of the device and the camera mount. The two strings were the exact length of the table and placed the camera at the edge of the far side of the table. By ensuring both strings are taught it enabled the same placement of the camera every set up. 
+
+Overall, the assembly was sturdy and held up well to use. Though there was some slop in the aiming axis, this did not affect our accuracy enough to be a problem.
+
+Completed design:
 
 ### Software Design Overview:
 
@@ -71,7 +79,7 @@ One of our major issues was the accuracy of the projectile launcher itself. Bein
 
 Picking a projectile launcher was the most crucial part of this project. It is hard to know what exact design specificiations you want when you initilly order this part yet it is an extremely important part of the system that is hard to change later. We would recommend testing accuracy as well as researching weight and size of the launcher before purchasing. 
 
-### Additional Links:
+###For Doxy main page
+Finite State Machine:
 
-CAD Drawings Link...
-
+![image](https://user-images.githubusercontent.com/123694704/222577944-6a93ee3a-615a-4e62-8a17-e6fa583c91a9.png)
