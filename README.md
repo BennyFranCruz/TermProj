@@ -23,8 +23,7 @@ As the design proccess continued, we selected a blaster that could be automatica
 For both axis of aiming we used a simple gear system with a drive gear connected to the motors and a driven gear on each axis. This allowed fine control due to reduction gear ratios. 
 
 Completed CAD Design:
-
-
+![image](https://user-images.githubusercontent.com/123684992/226243861-27d542d2-b5b0-49d3-b2bf-de869f64b562.png)
 
 Week 8 Progress: One axis motion
 
@@ -34,7 +33,8 @@ After week 8, we desided to have the camera be mounted seperatly for the rest of
 
 Overall, the assembly was sturdy and held up well to use. Though there was some slop in the aiming axis, this did not affect our accuracy enough to be a problem.
 
-Completed design:
+Completed Design in Use:
+<img width="808" alt="image" src="https://user-images.githubusercontent.com/123684992/226244041-9413da00-9145-44ec-8b8e-c95221b409dd.png">
 
 ### Software Design Overview:
 
@@ -83,3 +83,4 @@ Picking a projectile launcher was the most crucial part of this project. It is h
 Finite State Machine:
 
 ![image](https://user-images.githubusercontent.com/123694704/222577944-6a93ee3a-615a-4e62-8a17-e6fa583c91a9.png)
+
