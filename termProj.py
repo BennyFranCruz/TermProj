@@ -1,3 +1,16 @@
+"""!
+@file termProj.py
+    This file contains the main code for our term project. Contained is three main tasks: The yaw
+    motor control taks, the x motor control task, and the main task that controlls all the states
+    necessary for our aiming and firing proccess.
+    
+TODO: Party cause its the end of the quarter!
+
+@author Mech-07 and JR Ridgely
+@date   19-Marth-2023
+@copyright (c) 2023 by Mech-07 and JR Ridgely and released under GNU Public License v3
+"""
+
 import encoder_reader
 import motor_driver
 import porportional_controller
@@ -14,11 +27,13 @@ import pyb
 
 def YawMotorControlTask(shares):
     """!
-    Task sets up a second motor and encoder and runs a proportional
-    controller with a set position on this motor. 
+    Task initializes the motor and encoder for the turrets yaw axis and runs the motor
+    with a proportional controller when given a goal position
+     
     @param shares A list holding the share and queue used by this task
     """
     
+    #Variables that need to be shared between this task and the main task
     Y_pos, Y_vel, Y_goal = shares
     
         
@@ -45,24 +60,17 @@ def YawMotorControlTask(shares):
     #creates P pontroller object and sets Ka
     controller1 = porportional_controller.PorportionalController(.08)
     
-    position = 0
-    t=0
-    
+    position = 0 #Sets initial position to zer
+
     while True:
         oldposition = position #remembers old position
         position = encode.read() #find current position
-                                        #Gets the current pos goal
+        
+                                        
         Y_vel.put(position-oldposition) #Puts the current velocity
-        Y_pos.put(position)
+        Y_pos.put(position)             #Puts the current pos
 
-        
         control_output = controller1.run(Y_goal.get(), position) #run Pcontroller
-        
-        #Printing Position Logic
-        #if t > 30:
-            #print(position)
-            #t = 0
-        #t+= 1
 
         moe.set_duty_cycle(control_output) #set the duty cycle to value found from Pcontroller
         
@@ -70,10 +78,13 @@ def YawMotorControlTask(shares):
 
 def PitchMotorControlTask(shares):
     """!
-    Task sets up a second motor and encoder and runs a proportional
-    controller with a set position on this motor. 
+    Task initializes the motor and encoder for the turrets pitch axis and runs the motor
+    with a proportional controller when given a goal position
+     
     @param shares A list holding the share and queue used by this task
     """
+    
+    #Variables that need to be shared between this task and the main task
     X_pos, X_vel, X_goal = shares
     
     #Encoder initializing. Includes defining the timer and the pins for our encoder class
@@ -99,19 +110,16 @@ def PitchMotorControlTask(shares):
     #creates P pontroller object and sets Ka
     controller2 = porportional_controller.PorportionalController(.05)
     
-    position = 0
-    t = 0
+    position = 0 #Sets initial position to zero
     
     while True:   
         oldposition = position #remembers old position
         position = encode2.read() #find current position
-                                        #Gets the current pos goal
+                                        
         X_vel.put(position-oldposition) #Puts the current velocity
-        X_pos.put(position)
-
+        X_pos.put(position)             #Puts the current position
         
         control_output = controller2.run(X_goal.get(), position) #run Pcontroller
-
 
         moe2.set_duty_cycle(control_output) #Sets duty cycle to controller output
         
@@ -119,14 +127,19 @@ def PitchMotorControlTask(shares):
         
 def MainTask(shares):
     """!
-    Task controls all rotate, aim, fire sequence
+    Task controls the rotate, aim, and fire sequence
+    
     @param shares A list holding the share and queue used by this task
     """
+    
+    #initializes a time that is used for timing the 5 seconds between round starting and
+    #opponents freezing
     inittime = utime.ticks_ms()
     
+    #shared variables between all tasks
     Y_pos, Y_vel, Y_goal, X_pos, X_vel, X_goal = shares
     
-    #fire pin instalizing
+    #fire activation pin instalizing
     pinB4 = pyb.Pin(pyb.Pin.board.PB0, pyb.Pin.OUT_PP)
     pinB4.value(0)
         
@@ -157,31 +170,29 @@ def MainTask(shares):
     col = 32 #Set col length
     row = 24 #Set Row Length 
     gc.collect()
-    
-    #Issue of movement when initially Powered on: This code allows us to power on without movement
-    ZeroEncoders = False#SET FALSE BEFORE RUN
-    
-    while ZeroEncoders == True:
-        X_goal.put(0)
-        Y_goal.put(0)
-        yield(0)
-    
+
+    #logging initial time
     inittime = utime.ticks_ms()
     
-    "Turn 180 State"
+    #TURN 180 DEG STATE
+    
+    #setting position goal of 180 degrees
     Y_goal.put(-100000)
     
-    "Move 180 degree rotation"
+    #While loop will stay in the controll loop untill the yaw axis is in the correct position and no longer moving
     while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0: 
         
         X_goal.put(4500)
         Y_goal.put(-100000)
         yield(0)
-        
+    
+    #After the position is correct, the assem will be in a hold state untill 5 seconds passes
     while (utime.ticks_ms() - inittime < 4800):
         yield(0)
 
-        
+    #CAMERA CAPTURE STATE:
+    
+    #Following is the logic for the camera image capture. This state is held for only one iteration
     try:
         image = camera.get_image()
         maxVal = 0
@@ -214,17 +225,21 @@ def MainTask(shares):
         pass
     yield(0)
     
-    #Funct that converts pixel target to values for aim goals goes her
+    #AIM STATE
+    
     #Use maxVal_loc tuple to conver to pixel location 
     encode_pos = 550 * (maxVal_loc[1] - 16)
-    #print(encode_pos)
+
+    #Funct that converts pixel target to values for aim goals.
+    #Through testing we dicovered that the pitch target did not need to be adjusted and could be held at a static position
     Y_CameraGoal = -encode_pos - 100000 
     X_CameraGoal = 4500
-
+    
+    #putting new orientation goals into the shares
     Y_goal.put(Y_CameraGoal)
     X_goal.put(X_CameraGoal)
     
-    #Use Yaw Motor Control to move to correct position
+    #Use Yaw Motor Control to move to correct position. Will stay in this state untill goal position is held
     while abs(Y_goal.get() - Y_pos.get()) > 200 and Y_vel !=0:
         
         Y_goal.put(Y_CameraGoal)
@@ -232,7 +247,9 @@ def MainTask(shares):
         
         yield(0)  
     
-    "Fire State"
+    #FIRE STATE
+        
+    #Fire pin is set to high for a given number of iterations, this time relates to roughlt 3 shots
     c = 0
     while c < 80:
         pinB4.value(1)
@@ -240,6 +257,9 @@ def MainTask(shares):
         c += 1
         yield(0)
     
+    #End State
+    
+    #This state is the finished state. The assembly should make no further actions
     while True:
         pinB4.value(0)
     
