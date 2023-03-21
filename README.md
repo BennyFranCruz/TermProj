@@ -77,7 +77,7 @@ With an accurate encoder position, our porportional controller can be ran on thi
 
 The final state of our main task file is the firing state. Due to our hardware design described above, a simple turning of a pin high to enable the relay is all that is necessary to fire the device. By setting the time high to a specific value we can determine the amount of "bullets" fired by our device to to its semi-automatic nature. 
 
-Doxygen Link...
+Doxygen Link: https://bennyfrancruz.github.io/TermProj/md__c___users__ben__documents__y5_q2__m_e405_lab__term_proj__r_e_a_d_m_e.html
 
 ### Results:
 
